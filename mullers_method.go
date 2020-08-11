@@ -26,13 +26,20 @@ type Equation struct {
 }
 
 
+
 func main() {
 
 
-
+	//TODO.... YOUR EQUATION GOES HERE
 	//Represents: 3x^7 - 2x^6 + 20x^5 -4x^2 + x - 12
 	baseEquation := [][]complex128{[]complex128{3, 7}, []complex128{-2, 6}, []complex128{20, 5}, []complex128{-4, 2}, []complex128{1, 1}, []complex128{-12, 0}}
 
+
+	//TODO YOUR HIGHEST POWER GOES HERE
+	highestPowerOfEquation := 7
+
+	//technically do not need 2 variables but it is good to point out the highest power is total root count
+	totalRoots := highestPowerOfEquation
 
 	//get random xn xn - 1 and xn -2 values 
 
@@ -52,82 +59,89 @@ func main() {
 
 	xnm2 = 1
 
-	//x values must be unique
-	for xn == xnm1 || xnm1 == xnm2 || xn == xnm2  {
+	rootsFound := []complex128{}
 
 
+	for len(rootsFound) < totalRoots-1 {
 
-
-		rand.Seed(time.Now().UnixNano())
-		rxn := complex( float64(rand.Int()%7), float64(0))
-
-		xn = rxn
-
-		time.Sleep(time.Duration(2)*time.Millisecond)
-
-		rand.Seed(time.Now().UnixNano())
-		rxnm1 := complex(float64(rand.Int()%10), float64(0))
-
-		xnm1 = rxnm1
-
-		time.Sleep(time.Duration(2)*time.Millisecond)
-
-		rand.Seed(time.Now().UnixNano())
-		rxnm2 := complex(float64(rand.Int()%20), float64(0))
-
-		xnm2 = rxnm2 
+		xn = 0
 	
+		xnm1 = 0
+
+		xnm2 = 0
+		
+
+		//x values must be unique
+		for xn == xnm1 || xnm1 == xnm2 || xn == xnm2  {
+
+			//pseudo randomally also need to check negative x inputs
+
+			addANegativeTerm0 := false
+
+			addANegativeTerm1 := false
+
+			addANegativeTerm2 := false
+
+			rand.Seed(time.Now().UnixNano())
+			negative0 := rand.Int()%100
+			rand.Seed(time.Now().UnixNano())
+			negative1 := rand.Int()%100
+			rand.Seed(time.Now().UnixNano())
+			negative2 := rand.Int()%100
+
+			if(negative0%2 == 0){
+				addANegativeTerm0 = true
+			}
+			if(negative1%2 == 0){
+				addANegativeTerm1 = true
+			}
+			if(negative2%2 == 0){
+				addANegativeTerm2 = true
+			}
 
 
-	}
+			rand.Seed(time.Now().UnixNano())
+			rxn := complex( float64(rand.Int()%100), float64(0))
 
-	fmt.Println("Initial X vals", xn, xnm1, xnm2)
+			xn = rxn
 
-	yn := EvaluateEquationAtX(baseEquation, xn)
-	ynm1 := EvaluateEquationAtX(baseEquation, xnm1)
-	ynm2 := EvaluateEquationAtX(baseEquation, xnm2)
+			if(addANegativeTerm0){
+				xn = xn * - 1
+			}
 
+			time.Sleep(time.Duration(2)*time.Millisecond)
 
-	topRow := []complex128{cmplx.Pow(xn, 2), xn, 1, yn}
-	midRow := []complex128{cmplx.Pow(xnm1, 2), xnm1, 1, ynm1}
-	botRow := []complex128{cmplx.Pow(xnm2, 2), xnm2, 1, ynm2}
+			rand.Seed(time.Now().UnixNano())
+			rxnm1 := complex(float64(rand.Int()%100), float64(0))
 
-	matrixOfSystem := Matrix{[][]complex128{topRow, midRow, botRow}}
+			xnm1 = rxnm1
 
+			if(addANegativeTerm1){
+				xnm1 = xnm1 * -1
+			}
 
+			time.Sleep(time.Duration(2)*time.Millisecond)
 
-	fmt.Println("Initial Y Vals", yn, ynm1, ynm2)
-
-
-	// a, b, c := GetEquationForParabola(xn, xnm1, xnm2, yn, ynm1, ynm2)
-
-
-	a, b, c := CalculateABCForParabolaEquation(matrixOfSystem)
-
+			rand.Seed(time.Now().UnixNano())
+			rxnm2 := complex(float64(rand.Int()%100), float64(0))
 
 
-	fmt.Println("a = ", a, "b = ", b, "c = ", c)
+			xnm2 = rxnm2 
 
-	//for a root not yet found
-	for  !aboutEquals(EvaluateEquationAtX(baseEquation, xn), complex(0, 0)) {
 
-		q := EvaluateQ(xn, xnm1, xnm2)
+			if(addANegativeTerm2){
+				xnm2 = xnm2 * -1
+			}		
 
-		BigA := EvaluateBigA(q, a, b, c, xn, xnm1, xnm2)
 
-		BigB := EvaluateBigB(q, a, b, c, xn, xnm1, xnm2)
+		}
 
-		BigC := EvaluateBigC(q, a, b, c, xn)
+		// fmt.Println("Initial X vals", xn, xnm1, xnm2)
 
-		nextTerm := EvaluateNextTerm(BigA, BigB, BigC, xn, xnm1)
+		yn := EvaluateEquationAtX(baseEquation, xn)
+		ynm1 := EvaluateEquationAtX(baseEquation, xnm1)
+		ynm2 := EvaluateEquationAtX(baseEquation, xnm2)
 
-		xnm2 = xnm1
-		xnm1 = xn
-		xn = nextTerm
-
-		yn = EvaluateEquationAtX(baseEquation, xn)
-		ynm1 = EvaluateEquationAtX(baseEquation, xnm1)
-		ynm2 = EvaluateEquationAtX(baseEquation, xnm2)
 
 		topRow := []complex128{cmplx.Pow(xn, 2), xn, 1, yn}
 		midRow := []complex128{cmplx.Pow(xnm1, 2), xnm1, 1, ynm1}
@@ -137,26 +151,81 @@ func main() {
 
 
 
-		fmt.Println("Initial Y Vals", yn, ynm1, ynm2)
+		// fmt.Println("Initial Y Vals", yn, ynm1, ynm2)
+
+
+		// a, b, c := GetEquationForParabola(xn, xnm1, xnm2, yn, ynm1, ynm2)
+
+
+		a, b, c := CalculateABCForParabolaEquation(matrixOfSystem)
 
 
 
-		a, b, c = CalculateABCForParabolaEquation(matrixOfSystem)
+		// fmt.Println("a = ", a, "b = ", b, "c = ", c)
 
 
-		// a, b, c = GetEquationForParabola(xn, xnm1, xnm2, yn, ynm1, ynm2)
 
-		fmt.Println("New X vals", xn, xnm1, xnm2)
+		//for a root not yet found
+		for  !aboutEquals(EvaluateEquationAtX(baseEquation, xn), complex(0, 0)) {
 
-		fmt.Println("New Y Vals", yn, ynm1, ynm2)
+			q := EvaluateQ(xn, xnm1, xnm2)
 
+			BigA := EvaluateBigA(q, a, b, c, xn, xnm1, xnm2)
+
+			BigB := EvaluateBigB(q, a, b, c, xn, xnm1, xnm2)
+
+			BigC := EvaluateBigC(q, a, b, c, xn)
+
+			nextTerm := EvaluateNextTerm(BigA, BigB, BigC, xn, xnm1)
+
+			xnm2 = xnm1
+			xnm1 = xn
+			xn = nextTerm
+
+			yn = EvaluateEquationAtX(baseEquation, xn)
+			ynm1 = EvaluateEquationAtX(baseEquation, xnm1)
+			ynm2 = EvaluateEquationAtX(baseEquation, xnm2)
+
+			topRow := []complex128{cmplx.Pow(xn, 2), xn, 1, yn}
+			midRow := []complex128{cmplx.Pow(xnm1, 2), xnm1, 1, ynm1}
+			botRow := []complex128{cmplx.Pow(xnm2, 2), xnm2, 1, ynm2}
+
+			matrixOfSystem := Matrix{[][]complex128{topRow, midRow, botRow}}
+
+
+
+			// fmt.Println("Initial Y Vals", yn, ynm1, ynm2)
+
+
+
+			a, b, c = CalculateABCForParabolaEquation(matrixOfSystem)
+
+
+			// a, b, c = GetEquationForParabola(xn, xnm1, xnm2, yn, ynm1, ynm2)
+
+			// fmt.Println("New X vals", xn, xnm1, xnm2)
+
+			// fmt.Println("New Y Vals", yn, ynm1, ynm2)
+
+
+		}
+
+		// fmt.Println(xn, " is a root")
+
+		// fmt.Println("f(", xn, ") = ", EvaluateEquationAtX(baseEquation, xn))
+
+		rootsFound = CleanRootAddIfNotDuplicate(rootsFound, xn)
+
+	// 	for i := 0; i < len(rootsFound); i++ {
+	// 	fmt.Println(rootsFound[i])
+	// }
 
 	}
 
-	fmt.Println(xn, " is a root")
 
-	fmt.Println("f(", xn, ") = ", EvaluateEquationAtX(baseEquation, xn))
-
+	for i := 0; i < len(rootsFound); i++ {
+		fmt.Println(rootsFound[i])
+	}
 
 
 
@@ -276,13 +345,13 @@ func CalculateABCForParabolaEquation(matrixInput Matrix) (complex128, complex128
 		panic("error, equation could not define a parabola length is not 4 for matrix")
 	}
 
-	fmt.Println("Input matrix")
-	PrintMatrix(matrixInput)
+	// fmt.Println("Input matrix")
+	// PrintMatrix(matrixInput)
 
 	solutionColumn := []complex128{matrixInput.Rows[0][3], matrixInput.Rows[1][3], matrixInput.Rows[2][3]}
 
-	fmt.Println("solution column")
-	fmt.Println(solutionColumn)
+	// fmt.Println("solution column")
+	// fmt.Println(solutionColumn)
 
 	aDet := CalculateDeterminantOfMatrix(SwapSolutionColumnToXColumn(matrixInput, solutionColumn))
 	
@@ -424,15 +493,15 @@ func PrintMatrix(matrixInput Matrix) {
 
 func aboutEquals(checkVal complex128, result complex128) bool {
 	
-fmt.Println(checkVal, result)
+	//fmt.Println(checkVal, result)
 
 	differenceReal  := math.Abs(real(checkVal) - real(result))
 
-	fmt.Println(differenceReal)
+	//fmt.Println(differenceReal)
 
 	differenceImag := math.Abs(imag(checkVal) - imag(result))
 
-	fmt.Println(differenceImag)
+	//fmt.Println(differenceImag)
 
 	if(differenceReal  <  float64(0.001) && differenceImag  <  float64(0.001)) {
 		return true
@@ -476,6 +545,49 @@ func CleanCopyMatrix(matrixInput Matrix) Matrix {
 
 
 
+func CleanRootAddIfNotDuplicate(solutions []complex128, newSolution complex128) []complex128 {
+
+
+	newSolutionCleaned := newSolution
+
+	//check if the real term is 0
+	if(aboutEquals(complex(real(newSolution), 0), complex(0, 0))) {
+		newSolutionCleaned = complex(0, imag(newSolutionCleaned))
+	}
+
+	//check if the imaginary term is 0
+	if(aboutEquals(complex(0, imag(newSolution)), complex(0, 0))) {
+		newSolutionCleaned = complex(real(newSolutionCleaned), 0)
+	}
+
+
+	solutionIsDuplicate := false
+
+	for i := 0; i < len(solutions); i++ {
+		
+		if(aboutEquals(newSolutionCleaned, solutions[i]) || aboutEquals(solutions[i], complex(real(newSolutionCleaned), (imag(newSolutionCleaned) * -1)))) {
+
+			
+			solutionIsDuplicate = true
+			break
+		}
+	}
+
+	if(!solutionIsDuplicate){
+
+		solutions = append(solutions, newSolutionCleaned)
+
+		//add both the solution and it's conjugate if the imaginary part is not null
+		if(imag(newSolutionCleaned) != 0){
+			solutions = append(solutions, complex(real(newSolutionCleaned), (imag(newSolutionCleaned) * -1)))
+		}
+
+	}
+
+
+	return solutions
+
+}
 
 
 
